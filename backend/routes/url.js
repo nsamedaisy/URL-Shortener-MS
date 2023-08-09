@@ -3,7 +3,7 @@ var Url = require("../models/url");
 
 var router = express.Router();
 
-router.post("/shorturl/new", function (req, res) {
+router.post("/api/shorturl/new", function (req, res) {
   const { url } = req.body;
 
   // using regex to validate the submitted URL
@@ -20,7 +20,7 @@ router.post("/shorturl/new", function (req, res) {
       } else {
         // If the URL doesn't exist, generate a new shortened URL and save it to the database
         const shortId = Math.floor(Math.random() * 100000).toString();
-        const shortUrl = `${req.protocol} || ${req.hostname}/shorturl/${shortId}`;
+        const shortUrl = `${req.protocol} || ${req.hostname}/api/shorturl/${shortId}`;
         const newUrl = new Url({ originalUrl: url, shortUrl });
         newUrl.save((err) => {
           if (err) {
@@ -34,12 +34,12 @@ router.post("/shorturl/new", function (req, res) {
   }
 });
 
-router.post("/shorturl/:id", function (req, res) {
+router.post("/api/shorturl/:id", function (req, res) {
   const { id } = req.params;
 
   // Find the URL with the matching short ID
   Url.findOne(
-    { shortUrl: `${req.protocol} || ${req.hostname}/shorturl/ ${id}` },
+    { shortUrl: `${req.protocol} || ${req.hostname}/api/shorturl/ ${id}` },
     (err, doc) => {
       if (doc) {
         // If the URL exists, redirect to the original URL

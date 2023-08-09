@@ -3,14 +3,16 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+var mongoose = require("mongoose");
+var cors = require("cors");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var urlRouter = require("./routes/url");
-var mongoose = require("mongoose");
 
+var app = cors();
 var app = express();
-var PORT = process.env.PORT || 7000;
+var PORT = process.env.PORT || 6000;
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -41,6 +43,11 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send("Something broke!");
+// });
 
 mongoose.connect(
   "mongodb+srv://nsamedaisy:Munchepb1@cluster0.6p3rjpc.mongodb.net/?retryWrites=true&w=majority",

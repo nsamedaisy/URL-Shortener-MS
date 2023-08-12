@@ -40,7 +40,7 @@ function App() {
       <div>
         {shortUrl && (
           <p>
-            ShortUrl:{" "}
+            ShortUrl: {" "}
             <a href={shortUrl} target="_blank" rel="noreferrer">
               {shortUrl}
             </a>

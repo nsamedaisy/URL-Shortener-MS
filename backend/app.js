@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var cors = require("cors");
+require("dotenv").config();
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -49,13 +50,12 @@ app.use(function (err, req, res, next) {
 //   res.status(500).send("Something broke!");
 // });
 
-mongoose.connect(
-  "mongodb+srv://nsamedaisy:Munchepb1@cluster0.6p3rjpc.mongodb.net/?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+const url = process.env.DATABASE_URL;
+
+mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 // module.exports = mongoose;
 

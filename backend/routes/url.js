@@ -3,53 +3,59 @@ var Url = require("../models/url");
 
 var router = express.Router();
 
-router.post("/api/shorturl/new", function (req, res) {
-  const { url } = req.body;
-
+router.post("/url/api/shorturl/", async (req, res) => {
   // using regex to validate the submitted URL
-  const urlPattern =
-    /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/g;
-  if (!urlPattern.test(url)) {
-    res.json({ error: "Invalid URL" });
-  } else {
-    // Check if the URL already exists in the database
-    Url.findOne({ originalUrl: url }, (err, doc) => {
-      if (doc) {
-        // If the URL already exists, return the existing +shortened URL
-        res.json({ original_url: doc.originalUrl, short_url: doc.shortUrl });
-      } else {
-        // If the URL doesn't exist, generate a new shortened URL and save it to the database
-        const shortId = Math.floor(Math.random() * 100000).toString();
-        const shortUrl = `${req.protocol} || ${req.hostname}/api/shorturl/${shortId}`;
-        const newUrl = new Url({ originalUrl: url, shortUrl });
-        newUrl.save((err) => {
-          if (err) {
-            res.json({ error: "Database error" });
-          } else {
-            res.json({ original_url: url, short_url: shortUrl });
-          }
-        });
-      }
-    });
+  const urlExpression =
+    /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/;
+
+  let regExp = new RegExp(urlExpression);
+
+  const originalUrl = req.body.originalUrl;
+  let shortUrl = Math.floor(Math.random() * 10000) + 1;
+
+  try {
+    if (originalUrl.match(regExp)) {
+      let Urls = await Url.find({});
+      Urls.map((url) => {
+        if (url.original_url === originalUrl) {
+          shortUrl = url.short_url;
+          console.log("correct");
+        }
+      });
+
+      const object = await Url.create({
+        original_url: originalUrl,
+        short_url: shortUrl,
+      });
+
+      res.json(object);
+    } else {
+      res.json({ error: "Invalid Url" });
+      return;
+    }
+  } catch (error) {
+    console.log("An error occurred;", error);
   }
 });
 
-router.post("/api/shorturl/:id", function (req, res) {
+router.get("/url/api/shorturl/:id", async (req, res) => {
   const { id } = req.params;
 
   // Find the URL with the matching short ID
-  Url.findOne(
-    { shortUrl: `${req.protocol} || ${req.hostname}/api/shorturl/ ${id}` },
-    (err, doc) => {
+  await Url.findOne({ short_url: id })
+    .then((doc) => {
       if (doc) {
         // If the URL exists, redirect to the original URL
-        res.redirect(doc.originalUrl);
+        res.redirect(doc.original_url);
       } else {
         // If the URL doesn't exist, return an error message
         res.json({ error: "URL not found" });
       }
-    }
-  );
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({ error: "Internal Server Error" });
+    });
 });
 
 module.exports = router;

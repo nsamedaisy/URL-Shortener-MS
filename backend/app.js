@@ -10,6 +10,7 @@ require("dotenv").config();
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var urlRouter = require("./routes/url");
+const { log } = require("console");
 
 var app = cors();
 var app = express();
@@ -27,10 +28,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use("/url", urlRouter);
+app.use("/", urlRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+  console.log(req.method, req.path);
   next(createError(404));
 });
 
@@ -52,10 +54,17 @@ app.use(function (err, req, res, next) {
 
 const url = process.env.DATABASE_URL;
 
-mongoose.connect(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("conneted to database");
+  })
+  .catch((err) => {
+    console.log("Can't connect to database: ", err);
+  });
 
 // module.exports = mongoose;
 

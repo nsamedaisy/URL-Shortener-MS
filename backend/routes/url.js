@@ -3,7 +3,7 @@ var Url = require("../models/url");
 
 var router = express.Router();
 
-router.post("/url/api/shorturl/", async (req, res) => {
+router.post("/url/api/shorturl", async (req, res) => {
   // using regex to validate the submitted URL
   const urlExpression =
     /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/;
@@ -45,6 +45,7 @@ router.get("/url/api/shorturl/:id", async (req, res) => {
   await Url.findOne({ short_url: id })
     .then((doc) => {
       if (doc) {
+        console.log(doc)
         // If the URL exists, redirect to the original URL
         res.redirect(doc.original_url);
       } else {

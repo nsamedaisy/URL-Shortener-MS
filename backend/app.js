@@ -14,7 +14,7 @@ const { log } = require("console");
 
 var app = cors();
 var app = express();
-var PORT = process.env.PORT || 6000;
+var PORT = process.env.PORT || 8080;
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -60,7 +60,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("conneted to database");
+    console.log("connected to database");
   })
   .catch((err) => {
     console.log("Can't connect to database: ", err);
